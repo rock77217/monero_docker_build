@@ -1,0 +1,20 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4e45dbb..f0dc344 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -48,7 +48,7 @@ include_directories(${BOOST})
+ if (TRUE OR HIDAPI_FOUND OR LibUSB_COMPILE_TEST_PASSED)
+   if (TRUE OR APPLE)
+     if(TRUE OR DEPENDS)
+-      list(APPEND EXTRA_LIBRARIES "-framework Foundation -framework IOKit")
++      #list(APPEND EXTRA_LIBRARIES "-framework Foundation -framework IOKit")
+     else()
+       find_library(COREFOUNDATION CoreFoundation)
+       find_library(IOKIT IOKit)
+@@ -103,4 +103,4 @@ if (APPLE)
+ 	    POST_BUILD COMMAND 
+ 	    ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@loader_path/"
+ 	    $<TARGET_FILE:monero-java>)
+-endif()
+\ No newline at end of file
++endif()

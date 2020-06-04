@@ -1,0 +1,42 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 23fc226..a9c4d42 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -9,8 +9,8 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11 -F/Library/Frameworks -
+ project(MoneroCppLibrary)
+ 
+ set(BUILD_LIBRARY ON)
+-set(BUILD_SAMPLE ON)
+-set(BUILD_SCRATCHPAD ON)
++set(BUILD_SAMPLE OFF)
++set(BUILD_SCRATCHPAD OFF)
+ 
+ ###################
+ # monero-project
+@@ -256,8 +256,8 @@ if (BUILD_LIBRARY)
+ 	
+ 	target_link_libraries(monero-cpp
+ 	
+-		hidapi
+-		
++		#hidapi
++		-Wl,--start-group
+ 		boost_chrono
+ 		boost_date_time
+ 		boost_filesystem
+@@ -295,7 +295,7 @@ if (BUILD_LIBRARY)
+ 		multisig
+ 		version
+ 		randomx
+-		
++		-Wl,--end-group
+ 		${EXTRA_LIBRARIES}
+ 	)
+ endif()
+@@ -408,4 +408,4 @@ if (BUILD_SCRATCHPAD)
+ 		
+ 		${EXTRA_LIBRARIES}
+ 	)
+-endif()
+\ No newline at end of file
++endif()
