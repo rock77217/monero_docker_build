@@ -57,10 +57,12 @@ for arch in ${archs[@]}; do
     fi
 
     out_path=${root_path}/jniLibs/$ARCH_ABI/
+    jar_path=${root_path}/jniLibs/
     docker run --name ${container_name} -i monero-library:$ARCH &
     wait
     mkdir -p ${out_path}
-    docker cp monero-library-$ARCH:/out/. ${out_path}
+    docker cp monero-library-$ARCH:/out/*.so ${out_path}
+    docker cp monero-library-$ARCH:/out/*.jar ${jar_path}
     docker stop monero-library-$ARCH
     docker rm $(docker ps -a -q)
 

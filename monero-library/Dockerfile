@@ -303,5 +303,6 @@ RUN make .
 
 WORKDIR /out
 RUN mv ${JLIB_BUILD_PATH}/*.so ./
+RUN mv ${JLIB_PATH}/target/*.jar ./
 
 ENTRYPOINT ["/bin/bash"]
