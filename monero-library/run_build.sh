@@ -1,6 +1,7 @@
 #!/bin/bash
 
 root_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+out_path=${root_path}/jniLibs
 
 cd ${root_path}
 
@@ -12,6 +13,13 @@ elif [ "$1" == "arm64" ]; then
     archs=($1)
 else
     archs=("arm" "arm64")
+fi
+
+if [ -d ${out_path} ]; then
+    echo "======================================================"
+    echo "Clear ${out_path} ..."
+    echo "======================================================"
+    rm -rf ${out_path}
 fi
 
 for arch in ${archs[@]}; do
@@ -56,20 +64,18 @@ for arch in ${archs[@]}; do
         docker rm ${container_name}
     fi
 
-    out_path=${root_path}/jniLibs/$ARCH_ABI/
-    jar_path=${root_path}/jniLibs/
+    out_arch=${out_path}/$ARCH_ABI/
     docker run --name ${container_name} -i monero-library:$ARCH &
     wait
-    mkdir -p ${out_path}
-    docker cp monero-library-$ARCH:/out/*.so ${out_path}
-    docker cp monero-library-$ARCH:/out/*.jar ${jar_path}
+    mkdir -p ${out_arch}
+    docker cp monero-library-$ARCH:/out/. ${out_arch}
     docker stop monero-library-$ARCH
     docker rm $(docker ps -a -q)
 
     echo "======================================================"
-    echo "$ARCH Done. Output path: ${out_path}"
+    echo "$ARCH Done. Output path: ${out_arch}"
     echo "======================================================"
 done
 
 call_user=`who am i | awk '{print $1}'`
-chown -R $call_user:$call_user ${root_path}/jniLibs
+chown -R $call_user:$call_user ${out_path}
