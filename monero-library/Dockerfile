@@ -8,12 +8,16 @@ ARG ARCH_ABI
 ARG TARGET_API
 ARG TARGET_HOST
 ARG MONERO_BUILD_CMD
+ARG HOST_NCORES
 
 ENV ARCH=${ARCH:-arm64}
 ENV ARCH_ABI=${ARCH_ABI:-arm64-v8a}
 ENV TARGET_API="${TARGET_API:-26}"
 ENV TARGET_HOST=${TARGET_HOST:-aarch64-linux-android}
 ENV MONERO_BUILD_CMD=${MONERO_BUILD_CMD:-release-static-android-armv8}
+ENV HOST_NCORES=${HOST_NCORES:-4}
+
+RUN echo "Core[${HOST_NCORES}]"
 
 #RUN export findJavaHome=`dirname $(dirname $(readlink -f $(which javac)))`
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
@@ -82,7 +86,6 @@ RUN set -ex \
 
 ENV HOST_PATH=$PATH
 ENV PATH=${NDK_TOOL_DIR}/${TARGET_HOST}/bin/:${NDK_TOOL_DIR}/bin/:$PATH
-ARG NPROC=4
 
 # Build iconv for lib boost locale
 ENV ICONV_VERSION 1.15
@@ -93,10 +96,10 @@ RUN curl -O -L --retry 5 http://ftp.gnu.org/pub/gnu/libiconv/libiconv-${ICONV_VE
     && rm -f libiconv-${ICONV_VERSION}.tar.gz \
     && cd libiconv-${ICONV_VERSION} \
     && CC=${TARGET_HOST}-clang CXX=${TARGET_HOST}-clang++ ./configure --build=x86_64-linux-gnu --host=arm-eabi --prefix=${PREFIX} --disable-rpath \
-    && make -j${NPROC} && make install
+    && make -j${HOST_NCORES} && make install
 
 RUN cd boost-sdk && \
-    ./b2 architecture=arm --build-type=minimal link=static runtime-link=static --with-chrono --with-date_time --with-filesystem --with-program_options --with-regex --with-serialization --with-system --with-thread --with-locale toolset=clang threading=multi threadapi=pthread target-os=android -sICONV_PATH=${PREFIX} install -j${NPROC}
+    ./b2 architecture=arm --build-type=minimal link=static runtime-link=static --with-chrono --with-date_time --with-filesystem --with-program_options --with-regex --with-serialization --with-system --with-thread --with-locale toolset=clang threading=multi threadapi=pthread target-os=android -sICONV_PATH=${PREFIX} install -j${HOST_NCORES}
 ENV BOOST_ROOT ${PREFIX}
 
 # download, configure and make Zlib
@@ -108,7 +111,7 @@ RUN curl -O -L --retry 5 https://zlib.net/zlib-${ZLIB_VERSION}.tar.gz \
     && rm zlib-${ZLIB_VERSION}.tar.gz \
     && mv zlib-${ZLIB_VERSION} zlib \
     && cd zlib && CC=${TARGET_HOST}-clang CXX=${TARGET_HOST}-clang++ ./configure --static \
-    && make -j${NPROC}
+    && make -j${HOST_NCORES}
 
 # OpenSSL
 ARG OPENSSL_VERSION=1.1.1b
@@ -146,7 +149,7 @@ RUN set -ex \
     && test `git rev-parse HEAD` = ${ZMQ_HASH} || exit 1 \
     && ./autogen.sh \
     && CC=${TARGET_HOST}-clang CXX=${TARGET_HOST}-clang++ ./configure --prefix=${PREFIX} --host=${TARGET_HOST} --enable-static --disable-shared \
-    && make -j${NPROC} \
+    && make -j${HOST_NCORES} \
     && make install \
     && ldconfig
 
@@ -168,7 +171,7 @@ RUN set -ex \
     && test `git rev-parse HEAD` = ${SODIUM_HASH} || exit 1 \
     && ./autogen.sh \
     && CC=${TARGET_HOST}-clang CXX=${TARGET_HOST}-clang++ ./configure --prefix=${PREFIX} --host=${TARGET_HOST} --enable-static --disable-shared \
-    && make -j${NPROC} \
+    && make -j${HOST_NCORES} \
     && make install
 
 ## Udev
@@ -246,8 +249,8 @@ ARG CMAKE_INCLUDE_PATH="${PREFIX}/include"
 ARG CMAKE_LIBRARY_PATH="${PREFIX}/lib"
 ARG ANDROID_STANDALONE_TOOLCHAIN_PATH=${NDK_TOOL_DIR}
 ARG USE_SINGLE_BUILDDIR=1
-RUN make ${MONERO_BUILD_CMD} -j${NPROC} && \
-    make ${MONERO_BUILD_CMD} -j${NPROC}
+RUN make ${MONERO_BUILD_CMD} -j${HOST_NCORES} && \
+    make ${MONERO_BUILD_CMD} -j${HOST_NCORES}
 
 # Copy libs
 WORKDIR ${CLIB_EXTLIB_PATH}
@@ -303,6 +306,6 @@ RUN make .
 
 WORKDIR /out
 RUN mv ${JLIB_BUILD_PATH}/*.so ./
-RUN mv ${JLIB_PATH}/target/*.jar ./
+#RUN mv ${JLIB_PATH}/target/*.jar ./
 
 ENTRYPOINT ["/bin/bash"]

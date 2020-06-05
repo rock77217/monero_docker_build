@@ -2,6 +2,7 @@
 
 root_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 out_path=${root_path}/jniLibs
+NCORES=`nproc 2>/dev/null || shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1`
 
 cd ${root_path}
 
@@ -52,6 +53,7 @@ for arch in ${archs[@]}; do
     --build-arg TARGET_API=$TARGET_API \
     --build-arg TARGET_HOST=$TARGET_HOST \
     --build-arg MONERO_BUILD_CMD=$MONERO_BUILD_CMD \
+    --build-arg HOST_NCORES=$NCORES \
     . || exit 1
     echo "======================================================"
     echo "Build done"
