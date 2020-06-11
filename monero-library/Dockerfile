@@ -216,14 +216,9 @@ ARG DIFF_PATH=/monero_docker_build
 WORKDIR ${DIFF_PATH}
 COPY *.diff ./
 
-ARG MONERO_JAVA_VERSION=v0.3.1
-ARG MONERO_JAVA_HASH=551fd11f576da6acd88a3f2cb1ce491c4dc6c9da
-ARG MONERO_CPP_VERSION=v0.3.0
-ARG MONERO_CPP_HASH=1cd2dbc926bc6cd381b24ba9f351dffba387ad53
+# Update Monero version
 ARG MONERO_VERSION=v0.16.0.0
 ARG MONERO_HASH=25419b4bfb9decfc54fbb5a25123b43ee7d60730
-
-# Update Monero version here
 WORKDIR ${XMR_CORE_PATH}
 RUN set -ex && \
     git fetch --tags && \
@@ -231,6 +226,8 @@ RUN set -ex && \
     test `git rev-parse HEAD` = ${MONERO_HASH} || exit 1 && \
     git submodule init && git submodule update
 
+ARG MONERO_CPP_VERSION=v0.3.0
+ARG MONERO_CPP_HASH=1cd2dbc926bc6cd381b24ba9f351dffba387ad53
 WORKDIR ${CLIB_PATH}
 RUN set -ex && \
     git fetch --tags && \
@@ -238,6 +235,8 @@ RUN set -ex && \
     test `git rev-parse HEAD` = ${MONERO_CPP_HASH} || exit 1 && \
     git apply ${DIFF_PATH}/monero-cpp.diff
 
+ARG MONERO_JAVA_VERSION=v0.3.2
+ARG MONERO_JAVA_HASH=42d385cb25b28e827a40b97ed724d8b9bd9be5c0
 WORKDIR ${JLIB_PATH}
 RUN set -ex && \
     git fetch --tags && \
