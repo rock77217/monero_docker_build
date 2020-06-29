@@ -217,8 +217,8 @@ WORKDIR ${DIFF_PATH}
 COPY *.diff ./
 
 # Update Monero version
-ARG MONERO_VERSION=v0.16.0.0
-ARG MONERO_HASH=25419b4bfb9decfc54fbb5a25123b43ee7d60730
+ARG MONERO_VERSION=v0.16.0.1
+ARG MONERO_HASH=a498a1b4ce432941dee47d74c7e05bf87acd3ad6
 WORKDIR ${XMR_CORE_PATH}
 RUN set -ex && \
     git fetch --tags && \
@@ -226,17 +226,17 @@ RUN set -ex && \
     test `git rev-parse HEAD` = ${MONERO_HASH} || exit 1 && \
     git submodule init && git submodule update
 
-ARG MONERO_CPP_VERSION=v0.3.0
-ARG MONERO_CPP_HASH=1cd2dbc926bc6cd381b24ba9f351dffba387ad53
+ARG MONERO_CPP_VERSION=v0.3.2
+ARG MONERO_CPP_HASH=92ffa11d0225d06f909c64705a7e922e7f6360a3
 WORKDIR ${CLIB_PATH}
 RUN set -ex && \
     git fetch --tags && \
-    git checkout -b ${MONERO_CPP_VERSION} origin/${MONERO_CPP_VERSION} && \
+    git checkout ${MONERO_CPP_VERSION} && \
     test `git rev-parse HEAD` = ${MONERO_CPP_HASH} || exit 1 && \
     git apply ${DIFF_PATH}/monero-cpp.diff
 
-ARG MONERO_JAVA_VERSION=v0.3.2
-ARG MONERO_JAVA_HASH=42d385cb25b28e827a40b97ed724d8b9bd9be5c0
+ARG MONERO_JAVA_VERSION=v0.3.3
+ARG MONERO_JAVA_HASH=b0518f5abe058eddb9bda97ed0ff90a78879155e
 WORKDIR ${JLIB_PATH}
 RUN set -ex && \
     git fetch --tags && \
@@ -297,7 +297,7 @@ WORKDIR ${JLIB_BUILD_PATH}
 RUN cp ${CLIB_BUILD_PATH}/libmonero-cpp.so ${JLIB_BUILD_PATH}
 
 RUN JAVA_HOME=`dirname $(dirname $(readlink -f $(which javac)))` && \
-    CC=${TARGET_HOST}-clang CXX=${TARGET_HOST}-clang++ \
+    CC=${TARGET_HOST}-clang CXX=${TAhRGET_HOST}-clang++ \
     cmake \
     -DCMAKE_BUILD_TYPE=release \
     -DANDROID=true \
