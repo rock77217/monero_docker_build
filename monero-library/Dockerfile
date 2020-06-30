@@ -2,6 +2,20 @@ FROM ubuntu:16.04 as builder
 
 RUN apt-get update && apt-get install -y unzip automake build-essential curl file pkg-config git python libtool libtinfo5 xsltproc gperf openjdk-8-jdk maven
 
+ARG JLIB_PATH=/monero-java
+ARG JLIB_BUILD_PATH=${JLIB_PATH}/build
+ARG CLIB_PATH=${JLIB_PATH}/external/monero-cpp
+ARG CLIB_BUILD_PATH=${CLIB_PATH}/build
+ARG CLIB_EXT_PATH=${CLIB_PATH}/external
+ARG CLIB_EXTLIB_PATH=${CLIB_PATH}/external-libs
+ARG XMR_CORE_PATH=${CLIB_EXT_PATH}/monero-core
+RUN git config --global http.postBuffer 2000000000
+
+# Clone monero git
+RUN git clone https://github.com/monero-ecosystem/monero-java ${JLIB_PATH}
+RUN git clone https://github.com/monero-ecosystem/monero-cpp ${CLIB_PATH}
+RUN git clone https://github.com/monero-project/monero ${XMR_CORE_PATH}
+
 # Define args
 ARG ARCH
 ARG ARCH_ABI
@@ -28,7 +42,7 @@ ARG NDK_VERSION=android-ndk-r17c
 ARG NDK_HASH=12cacc70c3fd2f40574015631c00f41fb8a39048
 RUN set -ex && \
     curl -O -L --retry 5 https://dl.google.com/android/repository/${NDK_VERSION}-linux-x86_64.zip && \
-    echo "${NDK_HASH}  ${NDK_VERSION}-linux-x86_64.zip" | sha1sum -c && \
+    echo "${NDK_HASH} ${NDK_VERSION}-linux-x86_64.zip" | sha1sum -c && \
     unzip ${NDK_VERSION}-linux-x86_64.zip && \
     mv ${NDK_VERSION} ndk
 ARG DEFAULT_ANDROID_NDK_ROOT=/opt/android/ndk
@@ -41,33 +55,19 @@ RUN PATH=$ANDROID_NDK_ROOT/build/tools/:$PATH && \
     echo "installing $ANDROID_NDK_ROOT $ARCH $args" && \
     make_standalone_toolchain.py $args --arch $ARCH --install-dir $NDK_TOOL_DIR
 
-ARG JLIB_PATH=/monero-java
-ARG JLIB_BUILD_PATH=${JLIB_PATH}/build
-ARG CLIB_PATH=${JLIB_PATH}/external/monero-cpp
-ARG CLIB_BUILD_PATH=${CLIB_PATH}/build
-ARG CLIB_EXT_PATH=${CLIB_PATH}/external
-ARG CLIB_EXTLIB_PATH=${CLIB_PATH}/external-libs
-ARG XMR_CORE_PATH=${CLIB_EXT_PATH}/monero-core
-RUN git config --global http.postBuffer 2000000000
-
-# Clone monero git
-WORKDIR ${JLIB_PATH}
-RUN git clone https://github.com/monero-ecosystem/monero-java .
-RUN git clone https://github.com/monero-ecosystem/monero-cpp ${CLIB_PATH}
-RUN git clone https://github.com/monero-project/monero ${XMR_CORE_PATH}
-
 WORKDIR ${CLIB_EXT_PATH}
 
 #INSTALL cmake
 ARG CMAKE_VERSION=3.14.6
 ARG CMAKE_VERSION_DOT=v3.14
 ARG CMAKE_HASH=82e08e50ba921035efa82b859c74c5fbe27d3e49a4003020e3c77618a4e912cd
-RUN cd /usr \
+RUN cd /usr/local \
     && curl -O -L --retry 5 https://cmake.org/files/${CMAKE_VERSION_DOT}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz \
     && echo "${CMAKE_HASH}  cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz" | sha256sum -c \
-    && tar -xzf /usr/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz \
-    && rm -f /usr/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
-ENV PATH /usr/cmake-${CMAKE_VERSION}-Linux-x86_64/bin:$PATH
+    && tar -xzf /usr/local/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz \
+    && rm -f /usr/local/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+
+ENV PATH /usr/local/cmake-${CMAKE_VERSION}-Linux-x86_64/bin:$PATH
 
 ## Boost
 #https://downloads.sourceforge.net/project/boost/boost/${BOOST_VERSION_DOT}/boost_${BOOST_VERSION}.tar.bz2
