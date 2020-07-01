@@ -226,8 +226,8 @@ RUN set -ex && \
     test `git rev-parse HEAD` = ${MONERO_HASH} || exit 1 && \
     git submodule init && git submodule update
 
-ARG MONERO_CPP_VERSION=v0.3.2
-ARG MONERO_CPP_HASH=92ffa11d0225d06f909c64705a7e922e7f6360a3
+ARG MONERO_CPP_VERSION=v0.3.3
+ARG MONERO_CPP_HASH=5644876fe38814ea0bb376c8118e1469be9b4aa6
 WORKDIR ${CLIB_PATH}
 RUN set -ex && \
     git fetch --tags && \
@@ -280,7 +280,7 @@ RUN find ${PREFIX}/lib -name "libsodium.a" -exec cp {} ${CLIB_EXTLIB_PATH}/libso
 WORKDIR ${CLIB_BUILD_PATH}
 RUN CC=${TARGET_HOST}-clang CXX=${TARGET_HOST}-clang++ \
     cmake \
-    -DCMAKE_BUILD_TYPE=debug \
+    -DCMAKE_BUILD_TYPE=release \
     -DANDROID=true \
     -DCMAKE_SYSTEM_NAME="Android" \
     -DCMAKE_ANDROID_API=${TARGET_API} \
