@@ -207,7 +207,7 @@ RUN set -ex \
 #    && test `git rev-parse HEAD` = ${HIDAPI_HASH} || exit 1 \
 #    && ./bootstrap \
 #    && PKG_CONFIG_DIR= \
-#	 PKG_CONFIG_LIBDIR=$PREFIX/lib/pkgconfig:$PREFIX/share/pkgconfig \
+#    PKG_CONFIG_LIBDIR=$PREFIX/lib/pkgconfig:$PREFIX/share/pkgconfig \
 #    PKG_CONFIG_SYSROOT_DIR=$PREFIX \
 #    CC=${TARGET_HOST}-clang CXX=${TARGET_HOST}-clang++ ./configure --host=arm-linux --prefix=${PREFIX} --enable-static --disable-shared \
 #    && make \

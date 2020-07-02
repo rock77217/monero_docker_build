@@ -143,6 +143,10 @@ RUN set -ex && \
     test `git rev-parse HEAD` = ${MONERO_JAVA_HASH} || exit 1 && \
     git apply ${DIFF_PATH}/monero-java.diff
 
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+RUN cp ${JAVA_HOME}/include/linux/jni_md.h ${JAVA_HOME}/include/
+RUN mvn install
+
 # Build Monero
 ENV PATH=${HOST_PATH}
 WORKDIR ${XMR_CORE_PATH}
@@ -186,9 +190,7 @@ WORKDIR ${JLIB_BUILD_PATH}
 RUN cp ${CLIB_BUILD_PATH}/libmonero-cpp.so ${JLIB_BUILD_PATH}
 
 RUN JAVA_HOME=`dirname $(dirname $(readlink -f $(which javac)))` && \
-    cmake \
-    -DCMAKE_BUILD_TYPE=release \
-    ..
+    cmake -DCMAKE_BUILD_TYPE=release ..
 
 RUN cmake --build .
 RUN make .
