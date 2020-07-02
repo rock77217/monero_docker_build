@@ -178,11 +178,11 @@ RUN set -ex \
 #ARG UDEV_VERSION=v3.2.8
 #ARG UDEV_HASH=d69f3f28348123ab7fa0ebac63ec2fd16800c5e0
 #RUN set -ex \
-#    && git clone https://github.com/gentoo/eudev -b ${UDEV_VERSION} \
-#    && cd eudev \
-#    && test `git rev-parse HEAD` = ${UDEV_HASH} || exit 1 \
+#    && git clone https://github.com/gentoo/eudev
+#RUN cd eudev \
+#    #&& test `git rev-parse HEAD` = ${UDEV_HASH} || exit 1 \
 #    && ./autogen.sh \
-#    && CC=${TARGET_HOST}-clang CXX=${TARGET_HOST}-clang++ ./configure --prefix=${PREFIX} --host=${TARGET_HOST} --enable-static --disable-gudev --disable-introspection --disable-hwdb --disable-manpages --disable-shared \
+#    && ./configure --prefix=${PREFIX} --disable-introspection --disable-hwdb \
 #    && make \
 #    && make install
 #
@@ -194,7 +194,7 @@ RUN set -ex \
 #    && cd libusb \
 #    && test `git rev-parse HEAD` = ${USB_HASH} || exit 1 \
 #    && ./autogen.sh \
-#    && ./configure --disable-shared \
+#    && ./configure --prefix=${PREFIX} \
 #    && make \
 #    && make install
 #
@@ -202,12 +202,14 @@ RUN set -ex \
 #ARG HIDAPI_VERSION=hidapi-0.8.0-rc1
 #ARG HIDAPI_HASH=40cf516139b5b61e30d9403a48db23d8f915f52c
 #RUN set -ex \
-#    && git clone https://github.com/signal11/hidapi -b ${HIDAPI_VERSION} \
-#    && cd hidapi \
+#    && git clone https://github.com/signal11/hidapi -b ${HIDAPI_VERSION}
+#RUN cd hidapi \
 #    && test `git rev-parse HEAD` = ${HIDAPI_HASH} || exit 1 \
 #    && ./bootstrap \
-#    && PKG_CONFIG_SYSROOT_DIR=$PREFIX \
-#    ./configure --host=${TARGET_HOST} --prefix=${PREFIX} --enable-static --disable-shared \
+#    && PKG_CONFIG_DIR= \
+#	 PKG_CONFIG_LIBDIR=$PREFIX/lib/pkgconfig:$PREFIX/share/pkgconfig \
+#    PKG_CONFIG_SYSROOT_DIR=$PREFIX \
+#    CC=${TARGET_HOST}-clang CXX=${TARGET_HOST}-clang++ ./configure --host=arm-linux --prefix=${PREFIX} --enable-static --disable-shared \
 #    && make \
 #    && make install
 
@@ -312,6 +314,5 @@ RUN make .
 
 WORKDIR /out
 RUN mv ${JLIB_BUILD_PATH}/*.so ./
-#RUN mv ${JLIB_PATH}/target/*.jar ./
 
 ENTRYPOINT ["/bin/bash"]

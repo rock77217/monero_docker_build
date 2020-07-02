@@ -1,0 +1,62 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index de0297e..ab30894 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -9,8 +9,8 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11 -F/Library/Frameworks -
+ project(MoneroCppLibrary)
+ 
+ set(BUILD_LIBRARY ON)
+-set(BUILD_SAMPLE ON)
+-set(BUILD_SCRATCHPAD ON)
++set(BUILD_SAMPLE OFF)
++set(BUILD_SCRATCHPAD OFF)
+ 
+ ###################
+ # monero-project
+@@ -256,7 +256,7 @@ if (BUILD_LIBRARY)
+ 	
+ 	target_link_libraries(monero-cpp
+ 	
+-		hidapi
++		#hidapi
+ 		
+ 		boost_chrono
+ 		boost_date_time
+@@ -311,7 +311,7 @@ if (BUILD_SAMPLE)
+ 	
+ 	target_link_libraries(sample_code
+ 	
+-		hidapi
++		#hidapi
+ 		
+ 		boost_chrono
+ 		boost_date_time
+@@ -366,7 +366,7 @@ if (BUILD_SCRATCHPAD)
+ 	
+ 	target_link_libraries(scratchpad
+ 	
+-		hidapi
++		#hidapi
+ 		
+ 		boost_chrono
+ 		boost_date_time
+@@ -408,4 +408,4 @@ if (BUILD_SCRATCHPAD)
+ 		
+ 		${EXTRA_LIBRARIES}
+ 	)
+-endif()
+\ No newline at end of file
++endif()
+diff --git a/src/wallet/monero_wallet_model.cpp b/src/wallet/monero_wallet_model.cpp
+index 0ea82c5..819d8c8 100644
+--- a/src/wallet/monero_wallet_model.cpp
++++ b/src/wallet/monero_wallet_model.cpp
+@@ -1137,7 +1137,7 @@ namespace monero {
+ 
+     // set num values
+     rapidjson::Value value_num(rapidjson::kNumberType);
+-    if (m_priority != boost::none) monero_utils::addJsonMember("priority", m_priority.get(), allocator, root, value_num);
++    if (m_priority != boost::none) monero_utils::addJsonMember("priority", (uint8_t) m_priority.get(), allocator, root, value_num);
+     if (m_ring_size != boost::none) monero_utils::addJsonMember("ringSize", m_ring_size.get(), allocator, root, value_num);
+     if (m_account_index != boost::none) monero_utils::addJsonMember("accountIndex", m_account_index.get(), allocator, root, value_num);
+     if (m_unlock_time != boost::none) monero_utils::addJsonMember("unlockTime", m_unlock_time.get(), allocator, root, value_num);
