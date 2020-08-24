@@ -125,8 +125,8 @@ RUN set -ex && \
     test `git rev-parse HEAD` = ${MONERO_HASH} || exit 1 && \
     git submodule init && git submodule update
 
-ARG MONERO_CPP_VERSION=v0.3.3
-ARG MONERO_CPP_HASH=5644876fe38814ea0bb376c8118e1469be9b4aa6
+ARG MONERO_CPP_VERSION=v0.3.5
+ARG MONERO_CPP_HASH=686428e5cd10808f1d3461d78ffab9e3ca787073
 WORKDIR ${CLIB_PATH}
 RUN set -ex && \
     git fetch --tags && \
@@ -134,8 +134,8 @@ RUN set -ex && \
     test `git rev-parse HEAD` = ${MONERO_CPP_HASH} || exit 1 && \
     git apply ${DIFF_PATH}/monero-cpp.diff
 
-ARG MONERO_JAVA_VERSION=v0.3.3
-ARG MONERO_JAVA_HASH=b0518f5abe058eddb9bda97ed0ff90a78879155e
+ARG MONERO_JAVA_VERSION=v0.3.5
+ARG MONERO_JAVA_HASH=c650c77f88dfb82f89d5976026164c94eff4152c
 WORKDIR ${JLIB_PATH}
 RUN set -ex && \
     git fetch --tags && \
