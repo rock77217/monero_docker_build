@@ -116,8 +116,8 @@ WORKDIR ${DIFF_PATH}
 COPY *.diff ./
 
 # Update Monero version
-ARG MONERO_VERSION=v0.16.0.3
-ARG MONERO_HASH=7bd1ed03dd29d1f194503b6fdce6588306328b72
+ARG MONERO_VERSION=v0.17.1.1
+ARG MONERO_HASH=76cc82c29234fc2805f936f0fc53d48acc9cedf7
 WORKDIR ${XMR_CORE_PATH}
 RUN set -ex && \
     git fetch --tags && \
@@ -125,8 +125,8 @@ RUN set -ex && \
     test `git rev-parse HEAD` = ${MONERO_HASH} || exit 1 && \
     git submodule init && git submodule update
 
-ARG MONERO_CPP_VERSION=v0.3.5
-ARG MONERO_CPP_HASH=686428e5cd10808f1d3461d78ffab9e3ca787073
+ARG MONERO_CPP_VERSION=v0.3.7
+ARG MONERO_CPP_HASH=478de96f4bf846b266514fa71ab99f2fde574c6c
 WORKDIR ${CLIB_PATH}
 RUN set -ex && \
     git fetch --tags && \
@@ -134,8 +134,8 @@ RUN set -ex && \
     test `git rev-parse HEAD` = ${MONERO_CPP_HASH} || exit 1 && \
     git apply ${DIFF_PATH}/monero-cpp.diff
 
-ARG MONERO_JAVA_VERSION=v0.3.5
-ARG MONERO_JAVA_HASH=c650c77f88dfb82f89d5976026164c94eff4152c
+ARG MONERO_JAVA_VERSION=v0.3.7
+ARG MONERO_JAVA_HASH=b8902876b822c8b64bc0113fd4abd1802613673c
 WORKDIR ${JLIB_PATH}
 RUN set -ex && \
     git fetch --tags && \
@@ -174,6 +174,7 @@ RUN find ${PREFIX}/lib -name "libcrypto.a" -exec cp {} ${CLIB_EXTLIB_PATH}/opens
     find ${PREFIX}/lib -name "libssl.a" -exec cp {} ${CLIB_EXTLIB_PATH}/openssl \;
 
 RUN find ${PREFIX}/lib -name "libsodium.a" -exec cp {} ${CLIB_EXTLIB_PATH}/libsodium \;
+RUN cp ${XMR_CORE_PATH}/build/release/src/crypto/libcncrypto.a ${XMR_CORE_PATH}/build/release/src/crypto/wallet/libwallet-crypto.a
 
 WORKDIR ${CLIB_BUILD_PATH}
 
